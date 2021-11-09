@@ -1,6 +1,4 @@
-# Three.js - Template - Complex
-
-🚧 This template is under construction
+# Small World
 
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
