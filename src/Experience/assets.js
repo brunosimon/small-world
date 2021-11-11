@@ -5,6 +5,10 @@ export default [
         items:
         [
             { name: 'model', source: '/assets/model.glb' },
+            
+            { name: 'windStroke1Model', source: '/assets/windStroke1Model.glb' },
+            { name: 'windStroke2Model', source: '/assets/windStroke2Model.glb' },
+
             { name: 'brassMatcapTexture', source: '/assets/matcaps/brass.png', type: 'texture' },
             { name: 'fabricPinkDarkMatcapTexture', source: '/assets/matcaps/fabricPinkDark.png', type: 'texture' },
             { name: 'fabricPinkLightMatcapTexture', source: '/assets/matcaps/fabricPinkLight.png', type: 'texture' },

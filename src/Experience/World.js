@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import Experience from './Experience.js'
 import Floor from './Floor.js'
 import MatcapsModel from './MatcapsModel.js'
+import WindStrokes from './WindStrokes.js'
 
 export default class World
 {
@@ -18,6 +19,7 @@ export default class World
             {
                 this.setFloor()
                 this.setMatcapsModel()
+                this.setWindStrokes()
             }
         })
     }
@@ -30,6 +32,11 @@ export default class World
     setMatcapsModel()
     {
         this.matcapsModel = new MatcapsModel()
+    }
+
+    setWindStrokes()
+    {
+        this.windStrokes = new WindStrokes()
     }
 
     resize()
