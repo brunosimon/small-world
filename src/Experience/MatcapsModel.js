@@ -46,7 +46,10 @@ export default class MatcapsModel
         {
             const material = this.model.materials[_materialKey]
 
-            material.new = new THREE.MeshMatcapMaterial({ matcap: this.resources.items[`${material.original.name}MatcapTexture`] })
+            const matcapTexture = this.resources.items[`${material.original.name}MatcapTexture`]
+            matcapTexture.encoding = THREE.sRGBEncoding
+
+            material.new = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
 
             for(const _mesh of material.meshes)
             {

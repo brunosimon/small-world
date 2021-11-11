@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import Experience from './Experience.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js'
 
 export default class Renderer
 {
@@ -16,7 +17,15 @@ export default class Renderer
         this.scene = this.experience.scene
         this.camera = this.experience.camera
         
-        this.usePostprocess = false
+        // Debug
+        if(this.debug)
+        {
+            this.debugFolder = this.debug.addFolder({
+                title: 'renderer'
+            })
+        }
+        
+        this.usePostprocess = true
 
         this.setInstance()
         this.setPostProcess()
@@ -44,7 +53,7 @@ export default class Renderer
 
         // this.instance.physicallyCorrectLights = true
         // this.instance.gammaOutPut = true
-        // this.instance.outputEncoding = THREE.sRGBEncoding
+        this.instance.outputEncoding = THREE.sRGBEncoding
         // this.instance.shadowMap.type = THREE.PCFSoftShadowMap
         // this.instance.shadowMap.enabled = false
         // this.instance.toneMapping = THREE.ReinhardToneMapping
@@ -70,6 +79,44 @@ export default class Renderer
         this.postProcess.renderPass = new RenderPass(this.scene, this.camera.instance)
 
         /**
+         * Render pass
+         */
+        this.postProcess.bokehPass = new BokehPass(
+            this.scene,
+            this.camera.instance,
+            {
+                focus: 21.50,
+                aperture: 0.001,
+                maxblur: 0.005,
+            }
+        )
+
+        // Debug
+        if(this.debug)
+        {
+            this.debugFolder
+                .addInput(
+                    this.postProcess.bokehPass.materialBokeh.uniforms.focus,
+                    'value',
+                    { label: 'focus' ,min: 0, max: 50 }
+                )
+                
+            this.debugFolder
+                .addInput(
+                    this.postProcess.bokehPass.materialBokeh.uniforms.aperture,
+                    'value',
+                    { label: 'aperture', min: 0, max: 0.01 }
+                )
+
+            this.debugFolder
+                .addInput(
+                    this.postProcess.bokehPass.materialBokeh.uniforms.maxblur,
+                    'value',
+                    { label: 'maxblur', min: 0, max: 0.1 }
+                )
+        }
+
+        /**
          * Effect composer
          */
         const RenderTargetClass = this.config.pixelRatio >= 2 ? THREE.WebGLRenderTarget : THREE.WebGLMultisampleRenderTarget
@@ -86,10 +133,12 @@ export default class Renderer
             }
         )
         this.postProcess.composer = new EffectComposer(this.instance, this.renderTarget)
-        this.postProcess.composer.setSize(this.config.width, this.config.height)
-        this.postProcess.composer.setPixelRatio(this.config.pixelRatio)
 
         this.postProcess.composer.addPass(this.postProcess.renderPass)
+        this.postProcess.composer.addPass(this.postProcess.bokehPass)
+        
+        this.postProcess.composer.setSize(this.config.width, this.config.height)
+        this.postProcess.composer.setPixelRatio(this.config.pixelRatio)
     }
 
     resize()

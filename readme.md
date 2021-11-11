@@ -1,5 +1,8 @@
 # Small World
 
+- [GitHub](https://github.com/brunosimon/small-world)
+- [Live](https://small-world.vercel.app)
+
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
 Run this followed commands:
