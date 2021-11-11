@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import Experience from './Experience.js'
+import Floor from './Floor.js'
 import MatcapsModel from './MatcapsModel.js'
 
 export default class World
@@ -15,9 +16,15 @@ export default class World
         {
             if(_group.name === 'base')
             {
+                this.setFloor()
                 this.setMatcapsModel()
             }
         })
+    }
+
+    setFloor()
+    {
+        this.floor = new Floor()
     }
 
     setMatcapsModel()
