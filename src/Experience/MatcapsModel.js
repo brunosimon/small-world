@@ -1,5 +1,8 @@
 import * as THREE from 'three'
+import { mergeUniforms } from 'three/src/renderers/shaders/UniformsUtils.js'
 import Experience from './Experience.js'
+import matcapVertex from './shaders/matcap/vertex.glsl'
+import matcapFragment from './shaders/matcap/fragment.glsl'
 
 export default class MatcapsModel
 {
@@ -49,7 +52,30 @@ export default class MatcapsModel
             const matcapTexture = this.resources.items[`${material.original.name}MatcapTexture`]
             matcapTexture.encoding = THREE.sRGBEncoding
 
-            material.new = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+            // material.new = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+
+            material.new = new THREE.ShaderMaterial({
+                uniforms: mergeUniforms([
+                    THREE.UniformsLib.common,
+                    THREE.UniformsLib.bumpmap,
+                    THREE.UniformsLib.normalmap,
+                    THREE.UniformsLib.displacementmap,
+                    THREE.UniformsLib.fog,
+                    THREE.UniformsLib.lights,
+                    {
+                        matcap: { value: null }
+                    }
+                ]),
+                defines:
+                {
+                    MATCAP: '',
+                    USE_MATCAP: ''
+                },
+                vertexShader: matcapVertex,
+                fragmentShader: matcapFragment
+            })
+            material.new.matcap = matcapTexture
+            material.new.uniforms.matcap.value = matcapTexture
 
             for(const _mesh of material.meshes)
             {
