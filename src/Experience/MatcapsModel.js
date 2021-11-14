@@ -14,7 +14,63 @@ export default class MatcapsModel
         this.scene = this.experience.scene
         this.resources = this.experience.resources
 
+        this.bounceColor = '#7c8627'
+        
+        // Debug
+        if(this.debug)
+        {
+            this.debugFolder = this.debug.addFolder({
+                title: 'matcapsModel'
+            })
+
+            this.debugFolder
+                .addInput(
+                    this,
+                    'bounceColor',
+                    { view: 'color' }
+                )
+                .on('change', () =>
+                {
+                    this.uniforms.uBounceColor.value.set(this.bounceColor)
+                })
+        }
+
+        this.setUniforms()
         this.setModel()
+    }
+
+    setUniforms()
+    {
+        this.uniforms = {}
+        this.uniforms.uBounceColor = { value: new THREE.Color(this.bounceColor) }
+        this.uniforms.uBounceOrientationOffset = { value: 1 }
+        this.uniforms.uBounceOrientationMultiplier = { value: 0.62 }
+        this.uniforms.uBounceDistanceLimit = { value: 3.8 }
+        
+        // Debug
+        if(this.debug)
+        {
+            this.debugFolder
+                .addInput(
+                    this.uniforms.uBounceOrientationOffset,
+                    'value',
+                    { label: 'uBounceOrientationOffset', min: - 1, max: 1 }
+                )
+                
+            this.debugFolder
+                .addInput(
+                    this.uniforms.uBounceOrientationMultiplier,
+                    'value',
+                    { label: 'uBounceOrientationMultiplier', min: 0, max: 3 }
+                )
+                
+            this.debugFolder
+                .addInput(
+                    this.uniforms.uBounceDistanceLimit,
+                    'value',
+                    { label: 'uBounceDistanceLimit', min: 0, max: 10 }
+                )
+        }
     }
 
     setModel()
@@ -76,6 +132,11 @@ export default class MatcapsModel
             })
             material.new.matcap = matcapTexture
             material.new.uniforms.matcap.value = matcapTexture
+                
+            material.new.uniforms.uBounceColor = this.uniforms.uBounceColor
+            material.new.uniforms.uBounceOrientationOffset = this.uniforms.uBounceOrientationOffset
+            material.new.uniforms.uBounceOrientationMultiplier = this.uniforms.uBounceOrientationMultiplier
+            material.new.uniforms.uBounceDistanceLimit = this.uniforms.uBounceDistanceLimit
 
             for(const _mesh of material.meshes)
             {

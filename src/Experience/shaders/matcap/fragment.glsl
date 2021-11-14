@@ -20,6 +20,14 @@ varying vec3 vViewPosition;
 #include <logdepthbuf_pars_fragment>
 #include <clipping_planes_pars_fragment>
 
+uniform vec3 uBounceColor;
+uniform float uBounceOrientationOffset;
+uniform float uBounceOrientationMultiplier;
+uniform float uBounceDistanceLimit;
+
+varying vec3 vWorldNormal;
+varying vec3 vModelPosition;
+
 void main() {
 
 	#include <clipping_planes_fragment>
@@ -51,6 +59,26 @@ void main() {
 	#endif
 
 	vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;
+
+	/**
+	 * Bounce
+	 */
+	// Distance
+	float floorDistanceStrength = (1.0 - vModelPosition.y / uBounceDistanceLimit);
+	floorDistanceStrength = clamp(floorDistanceStrength, 0.0, 1.0);
+	floorDistanceStrength = pow(floorDistanceStrength, 3.0);
+	
+	// Orientation
+	float orientationStrength = dot(vWorldNormal, vec3(0.0, - 1.0, 0.0));
+	orientationStrength += uBounceOrientationOffset;
+	orientationStrength *= uBounceOrientationMultiplier;
+	orientationStrength = clamp(orientationStrength, 0.0, 1.0);
+	orientationStrength = pow(orientationStrength, 3.0);
+
+	// Final
+	float finalBounce = floorDistanceStrength * orientationStrength;
+	outgoingLight = mix(outgoingLight, uBounceColor, finalBounce);
+	// outgoingLight = vec3(finalBounce);
 
 	#include <output_fragment>
 	#include <tonemapping_fragment>
