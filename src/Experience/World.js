@@ -45,6 +45,8 @@ export default class World
 
     update()
     {
+        if(this.matcapsModel)
+            this.matcapsModel.update()
     }
 
     destroy()
