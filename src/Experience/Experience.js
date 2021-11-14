@@ -9,6 +9,7 @@ import Resources from './Resources.js'
 import Renderer from './Renderer.js'
 import Camera from './Camera.js'
 import World from './World.js'
+import DepthOfField from './DepthOfField.js'
 
 import assets from './assets.js'
 
@@ -41,6 +42,7 @@ export default class Experience
         this.setScene()
         this.setCamera()
         this.setRenderer()
+        this.setDepthOfField()
         this.setResources()
         this.setWorld()
         
@@ -102,6 +104,11 @@ export default class Experience
         this.targetElement.appendChild(this.renderer.instance.domElement)
     }
 
+    setDepthOfField()
+    {
+        this.depthOfField = new DepthOfField()
+    }
+
     setResources()
     {
         this.resources = new Resources(assets)
@@ -118,6 +125,9 @@ export default class Experience
             this.stats.update()
         
         this.camera.update()
+
+        if(this.depthOfField)
+            this.depthOfField.update()
 
         if(this.world)
             this.world.update()

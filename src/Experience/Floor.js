@@ -65,6 +65,7 @@ export default class Floor
 
         // Mesh
         this.background.mesh = new THREE.Mesh(this.background.geometry, this.background.material)
+        this.background.mesh.frustumCulled = false
         this.scene.add(this.background.mesh)
 
         // Update colors
