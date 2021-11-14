@@ -14,7 +14,7 @@ export default class MatcapsModel
         this.scene = this.experience.scene
         this.resources = this.experience.resources
 
-        this.bounceColor = '#7c8627'
+        this.bounceColor = '#5c6607'
         
         // Debug
         if(this.debug)

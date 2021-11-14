@@ -6,6 +6,9 @@ export default [
         [
             { name: 'model', source: '/assets/model.glb' },
             
+            { name: 'bakedFloorModel', source: '/assets/bakedFloorModel.glb' },
+            { name: 'bakedFloorTexture', source: '/assets/bakedFloorTexture.png', type: 'texture' },
+            
             { name: 'windStroke1Model', source: '/assets/windStroke1Model.glb' },
             { name: 'windStroke2Model', source: '/assets/windStroke2Model.glb' },
 
