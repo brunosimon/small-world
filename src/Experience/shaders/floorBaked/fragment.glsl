@@ -5,6 +5,11 @@ varying vec2 vUv;
 
 void main()
 {
-    float alpha = 1.0 - texture2D(uAlphaMask, vUv).r;
+    float alpha = texture2D(uAlphaMask, vUv).r;
+
+    #ifdef INVERT
+        alpha = 1.0 - alpha;
+    #endif
+
     gl_FragColor = vec4(uColor, alpha);
 }

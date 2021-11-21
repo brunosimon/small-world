@@ -26,7 +26,8 @@ export default class Floor
         }
 
         this.setBackground()
-        this.setBaked()
+        this.setBakedShadow()
+        this.setBakedLight()
     }
 
     setBackground()
@@ -118,42 +119,87 @@ export default class Floor
         }
     }
 
-    setBaked()
+    setBakedShadow()
     {
-        this.baked = {}
+        this.bakedShadow = {}
 
-        this.baked.color = '#4c5219'
+        this.bakedShadow.color = '#4c5219'
 
-        this.baked.texture = this.resources.items.bakedFloorTexture
-        this.baked.texture.flipY = false
+        this.bakedShadow.texture = this.resources.items.bakedFloorShadowTexture
+        this.bakedShadow.texture.flipY = false
 
-        this.baked.material = new THREE.ShaderMaterial({
+        this.bakedShadow.material = new THREE.ShaderMaterial({
             transparent: true,
+            defines:
+            {
+                INVERT: ''
+            },
             uniforms:
             {
-                uAlphaMask: { value: this.baked.texture },
-                uColor: { value: new THREE.Color(this.baked.color) }
+                uAlphaMask: { value: this.bakedShadow.texture },
+                uColor: { value: new THREE.Color(this.bakedShadow.color) }
             },
             vertexShader: floorBakedVertex,
             fragmentShader: floorBakedFragment
         })
 
-        this.baked.model = this.resources.items.bakedFloorModel.scene.children[0]
-        this.baked.model.material = this.baked.material
-        this.scene.add(this.baked.model)
+        this.bakedShadow.model = this.resources.items.bakedFloorShadowModel.scene.children[0]
+        this.bakedShadow.model.material = this.bakedShadow.material
+        this.scene.add(this.bakedShadow.model)
         
         // Debug
         if(this.debug)
         {
             this.debugFolder
                 .addInput(
-                    this.baked,
+                    this.bakedShadow,
                     'color',
                     { label: 'shadowColor', view: 'color' }
                 )
                 .on('change', () =>
                 {
-                    this.baked.material.uniforms.uColor.value.set(this.baked.color)
+                    this.bakedShadow.material.uniforms.uColor.value.set(this.bakedShadow.color)
+                })
+        }
+    }
+    
+    setBakedLight()
+    {
+        this.bakedLight = {}
+
+        this.bakedLight.color = '#ffb8e3'
+
+        this.bakedLight.texture = this.resources.items.bakedFloorLightTexture
+        this.bakedLight.texture.flipY = false
+
+        this.bakedLight.material = new THREE.ShaderMaterial({
+            transparent: true,
+            uniforms:
+            {
+                uAlphaMask: { value: this.bakedLight.texture },
+                uColor: { value: new THREE.Color(this.bakedLight.color) }
+            },
+            vertexShader: floorBakedVertex,
+            fragmentShader: floorBakedFragment
+        })
+
+        this.bakedLight.model = this.resources.items.bakedFloorLightModel.scene.children[0]
+        this.bakedLight.model.position.y += 0.001
+        this.bakedLight.model.material = this.bakedLight.material
+        this.scene.add(this.bakedLight.model)
+        
+        // Debug
+        if(this.debug)
+        {
+            this.debugFolder
+                .addInput(
+                    this.bakedLight,
+                    'color',
+                    { label: 'lightColor', view: 'color' }
+                )
+                .on('change', () =>
+                {
+                    this.bakedLight.material.uniforms.uColor.value.set(this.bakedLight.color)
                 })
         }
     }

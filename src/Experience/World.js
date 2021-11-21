@@ -1,6 +1,8 @@
 import * as THREE from 'three'
+
 import Experience from './Experience.js'
 import Floor from './Floor.js'
+import Entrance from './Entrance.js'
 import MatcapsModel from './MatcapsModel.js'
 import WindStrokes from './WindStrokes.js'
 
@@ -18,6 +20,7 @@ export default class World
             if(_group.name === 'base')
             {
                 this.setFloor()
+                this.setEntrance()
                 this.setMatcapsModel()
                 this.setWindStrokes()
             }
@@ -27,6 +30,11 @@ export default class World
     setFloor()
     {
         this.floor = new Floor()
+    }
+
+    setEntrance()
+    {
+        this.entrance = new Entrance()
     }
 
     setMatcapsModel()

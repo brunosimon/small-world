@@ -20,13 +20,27 @@ varying vec3 vViewPosition;
 #include <logdepthbuf_pars_fragment>
 #include <clipping_planes_pars_fragment>
 
-uniform vec3 uBounceColor;
-uniform float uBounceOrientationOffset;
-uniform float uBounceOrientationMultiplier;
-uniform float uBounceDistanceLimit;
+uniform vec3 uFloorColor;
+uniform float uFloorOrientationOffset;
+uniform float uFloorOrientationMultiplier;
+uniform float uFloorDistanceLimit;
+
+uniform vec3 uPointColor;
+uniform float uPointOrientationOffset;
+uniform float uPointOrientationMultiplier;
+uniform float uPointDistanceLimit;
+uniform vec3 uPointPosition;
 
 varying vec3 vWorldNormal;
 varying vec3 vModelPosition;
+
+float blendAdd(float base, float blend) {
+	return min(base+blend,1.0);
+}
+
+vec3 blendAdd(vec3 base, vec3 blend) {
+	return min(base+blend,vec3(1.0));
+}
 
 void main() {
 
@@ -61,25 +75,45 @@ void main() {
 	vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;
 
 	/**
-	 * Bounce
+	 * Floor bounce
 	 */
 	// Distance
-	float floorDistanceStrength = (1.0 - vModelPosition.y / uBounceDistanceLimit);
+	float floorDistanceStrength = (1.0 - vModelPosition.y / uFloorDistanceLimit);
 	floorDistanceStrength = clamp(floorDistanceStrength, 0.0, 1.0);
 	floorDistanceStrength = pow(floorDistanceStrength, 3.0);
 	
 	// Orientation
-	float orientationStrength = dot(vWorldNormal, vec3(0.0, - 1.0, 0.0));
-	orientationStrength += uBounceOrientationOffset;
-	orientationStrength *= uBounceOrientationMultiplier;
-	orientationStrength = clamp(orientationStrength, 0.0, 1.0);
-	orientationStrength = pow(orientationStrength, 3.0);
+	float floorOrientationStrength = dot(vWorldNormal, vec3(0.0, - 1.0, 0.0));
+	floorOrientationStrength += uFloorOrientationOffset;
+	floorOrientationStrength *= uFloorOrientationMultiplier;
+	floorOrientationStrength = clamp(floorOrientationStrength, 0.0, 1.0);
+	floorOrientationStrength = pow(floorOrientationStrength, 3.0);
 
 	// Final
-	float finalBounce = floorDistanceStrength * orientationStrength;
-	outgoingLight = mix(outgoingLight, uBounceColor, finalBounce);
-	// outgoingLight = vec3(finalBounce);
+	float floorFinal = floorDistanceStrength * floorOrientationStrength;
+	outgoingLight = mix(outgoingLight, uFloorColor, floorFinal);
+	
+	/**
+	 * Point bounce
+	 */
+	// Distance
+	vec3 pointDeltaVector = vModelPosition.xyz - uPointPosition;
+	float pointDistanceStrength = length(pointDeltaVector) / uPointDistanceLimit;
+	pointDistanceStrength = 1.0 - clamp(pointDistanceStrength, 0.0, 1.0);
+	pointDistanceStrength = pow(pointDistanceStrength, 3.0);
+	
+	// Orientation
+	float pointOrientationStrength = dot(vWorldNormal, - normalize(pointDeltaVector));
+	pointOrientationStrength += uPointOrientationOffset;
+	pointOrientationStrength *= uPointOrientationMultiplier;
+	pointOrientationStrength = clamp(pointOrientationStrength, 0.0, 1.0);
+	pointOrientationStrength = pow(pointOrientationStrength, 3.0);
 
+	// // Final
+	float pointFinal = pointDistanceStrength * pointOrientationStrength;
+	vec3 pointColor = mix(vec3(0.0), uPointColor, pointFinal * 5.0);
+	outgoingLight = blendAdd(outgoingLight, pointColor);
+	
 	#include <output_fragment>
 	#include <tonemapping_fragment>
 	#include <encodings_fragment>

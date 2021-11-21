@@ -6,8 +6,13 @@ export default [
         [
             { name: 'model', source: '/assets/model.glb' },
             
-            { name: 'bakedFloorModel', source: '/assets/bakedFloorModel.glb' },
-            { name: 'bakedFloorTexture', source: '/assets/bakedFloorTexture.png', type: 'texture' },
+            { name: 'entranceModel', source: '/assets/entranceModel.glb' },
+
+            { name: 'bakedFloorLightModel', source: '/assets/bakedFloorLightModel.glb' },
+            { name: 'bakedFloorLightTexture', source: '/assets/bakedFloorLightTexture.png', type: 'texture' },
+            
+            { name: 'bakedFloorShadowModel', source: '/assets/bakedFloorShadowModel.glb' },
+            { name: 'bakedFloorShadowTexture', source: '/assets/bakedFloorShadowTexture.png', type: 'texture' },
             
             { name: 'windStroke1Model', source: '/assets/windStroke1Model.glb' },
             { name: 'windStroke2Model', source: '/assets/windStroke2Model.glb' },

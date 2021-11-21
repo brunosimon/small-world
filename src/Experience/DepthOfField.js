@@ -17,7 +17,7 @@ export default class DepthOfField
         this.focus = {}
         this.focus.value = 0
         this.focus.target = this.focus.value
-        this.focus.easing = 0.003
+        this.focus.easing = 0.005
     }
 
     update()

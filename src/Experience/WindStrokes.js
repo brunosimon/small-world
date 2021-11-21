@@ -36,14 +36,18 @@ export default class WindStrokes
         }
 
         this.setMaterial()
-        
-        window.setInterval(() =>
+
+        const autoPop = () =>
         {
             if(Math.random() < 0.3)
             {
                 this.pop()
             }
-        }, 500)
+
+            gsap.delayedCall(0.5, autoPop)
+        }
+
+        autoPop()
     }
 
     setMaterial()
@@ -58,6 +62,28 @@ export default class WindStrokes
             vertexShader: windStrokeVertex,
             fragmentShader: windStrokeFragment
         })
+
+        if(this.debug)
+        {
+            this.debugFolder
+                .addInput(
+                    this.material.uniforms.uProgress,
+                   'value',
+                   {
+                       min: 0, max: 1
+                   }
+                )
+
+                
+            const mesh = this.resource1.scene.children[0].clone(false)
+            mesh.material = this.material
+
+            mesh.position.x = 0
+            mesh.position.y = 2
+            mesh.position.z = 4
+
+            this.scene.add(mesh)
+        }
     }
 
     pop()
@@ -74,8 +100,8 @@ export default class WindStrokes
         gsap.to(
             mesh.material.uniforms.uProgress,
             {
-                ease: 'power4.inOut',
-                duration: 14,
+                ease: 'power2.inOut',
+                duration: 10,
                 value: 1
             }
         )
@@ -83,8 +109,9 @@ export default class WindStrokes
         gsap.to(
             mesh.position,
             {
-                duration: 14,
-                x: mesh.position.x + 3,
+                duration: 10,
+                ease: 'power2.inOut',
+                x: mesh.position.x + 1.5,
                 onComplete: () =>
                 {
                     mesh.geometry.dispose()
