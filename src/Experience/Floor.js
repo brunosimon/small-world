@@ -167,7 +167,7 @@ export default class Floor
     {
         this.bakedLight = {}
 
-        this.bakedLight.color = '#ffb8e3'
+        this.bakedLight.color = '#ffc8e9'
 
         this.bakedLight.texture = this.resources.items.bakedFloorLightTexture
         this.bakedLight.texture.flipY = false

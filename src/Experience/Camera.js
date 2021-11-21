@@ -16,7 +16,32 @@ export default class Camera
         this.scene = this.experience.scene
 
         // Set up
-        this.mode = 'debug' // defaultCamera \ debugCamera
+        this.mode = 'default' // default \ debug
+
+        // Debug
+        if(this.debug)
+        {
+            this.debugFolder = this.debug.addFolder({
+                title: 'camera'
+            })
+
+            this.debugFolder
+                .addInput(
+                    this,
+                    'mode',
+                    {
+                        options:
+                        {
+                            'default': 'default',
+                            'debug': 'debug'
+                        }
+                    }
+                )
+                .on('change', () =>
+                {
+                    this.modes.debug.orbitControls.enabled = this.mode === 'debug'
+                })
+        }
 
         this.setInstance()
         this.setModes()
@@ -38,6 +63,7 @@ export default class Camera
         // Default
         this.modes.default = {}
         this.modes.default.instance = this.instance.clone()
+        this.modes.default.instance.position.z = 10
         this.modes.default.instance.rotation.reorder('YXZ')
 
         // Debug
@@ -47,7 +73,7 @@ export default class Camera
         this.modes.debug.instance.position.set(15, 8, 15)
         
         this.modes.debug.orbitControls = new OrbitControls(this.modes.debug.instance, this.targetElement)
-        this.modes.debug.orbitControls.enabled = this.modes.debug.active
+        this.modes.debug.orbitControls.enabled = this.mode === 'debug'
         this.modes.debug.orbitControls.screenSpacePanning = true
         this.modes.debug.orbitControls.enableKeys = false
         this.modes.debug.orbitControls.zoomSpeed = 0.25

@@ -18,6 +18,7 @@
     "html-loader": "^3.0.1",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.4.4",
+    "normalize-wheel": "^1.0.1",
     "portfinder-sync": "0.0.2",
     "raw-loader": "^4.0.2",
     "stats.js": "^0.17.0",
