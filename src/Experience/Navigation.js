@@ -19,13 +19,18 @@ export default class Navigation
         this.setSpherical()
         this.setBoomTruck()
         this.setDrag()
+        this.setMouse()
+        this.setTouch()
         this.setWheel()
+        this.setContextMenu()
     }
 
     setSpherical()
     {
         this.spherical = {}
-        this.spherical.target = new THREE.Spherical(16, Math.PI * 0.4, Math.PI * 0.25)
+
+        const radius = Math.max(1, this.sizes.height / this.sizes.width) * 16
+        this.spherical.target = new THREE.Spherical(radius, Math.PI * 0.4, Math.PI * 0.25)
         this.spherical.value = this.spherical.target.clone()
 
         this.spherical.easing = 0.01
@@ -98,12 +103,12 @@ export default class Navigation
         {
             
         }
+    }
 
-        /**
-         * Mouse
-         */
-        this.drag.mouse = {}
-        this.drag.mouse.onMouseDown = (_event) =>
+    setMouse()
+    {
+        this.mouse = {}
+        this.mouse.onMouseDown = (_event) =>
         {
             // Prevent
             _event.preventDefault()
@@ -118,17 +123,17 @@ export default class Navigation
             this.targetElement.style.cursor = 'grabbing'
 
             // Events
-            this.targetElement.addEventListener('mousemove', this.drag.mouse.onMouseMove)
-            window.addEventListener('mouseup', this.drag.mouse.onMouseUp)
+            this.targetElement.addEventListener('mousemove', this.mouse.onMouseMove)
+            window.addEventListener('mouseup', this.mouse.onMouseUp)
         }
         
-        this.drag.mouse.onMouseMove = (_event) =>
+        this.mouse.onMouseMove = (_event) =>
         {
             // Move
             this.drag.move(_event.clientX, _event.clientY)
         }
         
-        this.drag.mouse.onMouseUp = () =>
+        this.mouse.onMouseUp = () =>
         {
             // End
             this.drag.end()
@@ -137,22 +142,96 @@ export default class Navigation
             this.targetElement.style.cursor = 'grab'
 
             // Events
-            this.targetElement.removeEventListener('mousemove', this.drag.mouse.onMouseMove)
-            window.removeEventListener('mouseup', this.drag.mouse.onMouseUp)
+            this.targetElement.removeEventListener('mousemove', this.mouse.onMouseMove)
+            window.removeEventListener('mouseup', this.mouse.onMouseUp)
         }
 
-        this.targetElement.addEventListener('mousedown', this.drag.mouse.onMouseDown)
+        this.targetElement.addEventListener('mousedown', this.mouse.onMouseDown)
+    }
 
-        /**
-         * Context menu
-         */
-        this.contextMenu = {}
-        this.contextMenu.onContextMenu = (_event) =>
+    setTouch()
+    {
+        this.touch = {}
+        
+        this.touch.pinch = {}
+        this.touch.pinch.value = 0
+        this.touch.pinch.previous = 0
+        this.touch.pinch.delta = 0
+        this.touch.pinch.multiplier = - 0.2
+
+        this.touch.onTouchStart = (_event) =>
         {
+            // Prevent
             _event.preventDefault()
+
+            // Button
+            this.drag.secondary = _event.touches.length > 1
+
+            // Start
+            let x = 0
+            let y = 0
+
+            for(const _touch of _event.touches)
+            {
+                x += _touch.clientX
+                y += _touch.clientY
+            }
+
+            x /= _event.touches.length
+            y /= _event.touches.length
+
+            this.drag.start(x, y)
+            
+            // Pinch
+            if(_event.touches.length > 1)
+            {
+                const distance = Math.hypot(_event.touches[0].clientX - _event.touches[1].clientX, _event.touches[0].clientY - _event.touches[1].clientY)
+
+                this.touch.pinch.value = distance
+                this.touch.pinch.previous = this.touch.pinch.value
+            }
+
+            // Events
+            this.targetElement.addEventListener('touchmove', this.touch.onTouchMove)
+            window.addEventListener('touchend', this.touch.onTouchEnd)
         }
         
-        window.addEventListener('contextmenu', this.contextMenu.onContextMenu)
+        this.touch.onTouchMove = (_event) =>
+        {
+            // Move
+            let x = 0
+            let y = 0
+
+            for(const _touch of _event.touches)
+            {
+                x += _touch.clientX
+                y += _touch.clientY
+            }
+
+            x /= _event.touches.length
+            y /= _event.touches.length
+
+            this.drag.move(x, y)
+
+            if(_event.touches.length > 1)
+            {
+                this.touch.pinch.value = Math.hypot(_event.touches[0].clientX - _event.touches[1].clientX, _event.touches[0].clientY - _event.touches[1].clientY)
+                this.touch.pinch.delta += this.touch.pinch.value - this.touch.pinch.previous
+                this.touch.pinch.previous = this.touch.pinch.value
+            }
+        }
+        
+        this.touch.onTouchEnd = () =>
+        {
+            // End
+            this.drag.end()
+
+            // Events
+            this.targetElement.removeEventListener('touchmove', this.touch.onTouchMove)
+            window.removeEventListener('touchend', this.touch.onTouchEnd)
+        }
+
+        this.targetElement.addEventListener('touchstart', this.touch.onTouchStart)
     }
 
     setWheel()
@@ -171,6 +250,17 @@ export default class Navigation
         document.addEventListener('mousewheel', this.wheel.onWheel)
     }
 
+    setContextMenu()
+    {
+        this.contextMenu = {}
+        this.contextMenu.onContextMenu = (_event) =>
+        {
+            _event.preventDefault()
+        }
+        
+        window.addEventListener('contextmenu', this.contextMenu.onContextMenu)
+    }
+
     update()
     {
         /**
@@ -178,6 +268,7 @@ export default class Navigation
          */
         // Radius
         this.spherical.target.radius += this.wheel.delta * this.spherical.speed.radius
+        this.spherical.target.radius += this.touch.pinch.delta * this.spherical.value.radius * this.touch.pinch.multiplier * this.spherical.speed.radius
         this.spherical.target.radius = Math.max(this.spherical.limits.radius.min, Math.min(this.spherical.limits.radius.max, this.spherical.target.radius))
 
         if(!this.drag.secondary)
@@ -215,6 +306,11 @@ export default class Navigation
          */
         this.drag.delta.x = 0
         this.drag.delta.y = 0
+        
+        /**
+         * Touch
+         */
+        this.touch.pinch.delta = 0
         
         /**
          * Wheel
