@@ -42,8 +42,8 @@ vec3 blendAdd(vec3 base, vec3 blend) {
 	return min(base+blend,vec3(1.0));
 }
 
-#ifdef IS_FLAG
-	varying float vFlagStrength;
+#ifdef USE_WIND
+	varying float vWindStrength;
 #endif
 
 void main() {
@@ -81,8 +81,8 @@ void main() {
 	/**
 	 * Flags
 	 */
-	#ifdef IS_FLAG
-		outgoingLight = outgoingLight + vFlagStrength * 0.15;
+	#ifdef USE_WIND
+		outgoingLight = outgoingLight + vWindStrength * 0.15;
 	#endif
 
 	/**

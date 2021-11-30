@@ -154,9 +154,9 @@ export default class MatcapsModel
             {
                 // Material
                 let materialName = _child.material.name
-                const isFlag = _child.name.match(/^flag/)
+                const useWind = _child.name.match(/^flag/)
 
-                if(isFlag)
+                if(useWind)
                     materialName += 'flag'
 
                 let material = this.model.materials[materialName]
@@ -166,7 +166,7 @@ export default class MatcapsModel
                     material = {}
                     material.original = _child.material
                     material.meshes = []
-                    material.isFlag = isFlag
+                    material.useWind = useWind
 
                     this.model.materials[materialName] = material
                 }
@@ -203,8 +203,8 @@ export default class MatcapsModel
                 USE_MATCAP: ''
             }
 
-            if(material.isFlag)
-                defines.IS_FLAG = ''
+            if(material.useWind)
+                defines.USE_WIND = ''
 
             material.new = new THREE.ShaderMaterial({
                 uniforms: mergeUniforms([
