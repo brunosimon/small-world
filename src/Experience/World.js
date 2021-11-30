@@ -53,6 +53,9 @@ export default class World
 
     update()
     {
+        if(this.entrance)
+            this.entrance.update()
+            
         if(this.matcapsModel)
             this.matcapsModel.update()
     }

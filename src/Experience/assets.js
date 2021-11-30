@@ -14,6 +14,8 @@ export default [
             { name: 'bakedFloorShadowModel', source: '/assets/bakedFloorShadowModel.glb' },
             { name: 'bakedFloorShadowTexture', source: '/assets/bakedFloorShadowTexture.png', type: 'texture' },
             
+            { name: 'entranceStrokeTexture', source: '/assets/entranceStrokeTexture.png', type: 'texture' },
+
             { name: 'windStroke1Model', source: '/assets/windStroke1Model.glb' },
             { name: 'windStroke2Model', source: '/assets/windStroke2Model.glb' },
 
