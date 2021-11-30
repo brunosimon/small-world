@@ -17,6 +17,12 @@ varying vec3 vViewPosition;
 varying vec3 vWorldNormal;
 varying vec3 vModelPosition;
 
+#ifdef IS_FLAG
+	attribute vec3 color;
+	uniform float uTime;
+	varying float vFlagStrength;
+#endif
+
 void main() {
 
 	#include <uv_vertex>
@@ -32,6 +38,13 @@ void main() {
 	vWorldNormal = worldNormal;
 
 	#include <begin_vertex>
+
+	#ifdef IS_FLAG
+		float flagStrength = (sin(transformed.y * 9.0 + uTime * 0.003) * sin(transformed.y * 2.345 + uTime * 0.002) + 1.0) * color.r * 0.5;
+		vFlagStrength = flagStrength;
+		transformed += normal * flagStrength * 0.12;
+	#endif
+
 	#include <morphtarget_vertex>
 	#include <skinning_vertex>
 	#include <displacementmap_vertex>

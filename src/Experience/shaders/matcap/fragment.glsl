@@ -42,6 +42,10 @@ vec3 blendAdd(vec3 base, vec3 blend) {
 	return min(base+blend,vec3(1.0));
 }
 
+#ifdef IS_FLAG
+	varying float vFlagStrength;
+#endif
+
 void main() {
 
 	#include <clipping_planes_fragment>
@@ -73,6 +77,13 @@ void main() {
 	#endif
 
 	vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;
+
+	/**
+	 * Flags
+	 */
+	#ifdef IS_FLAG
+		outgoingLight = outgoingLight + vFlagStrength * 0.15;
+	#endif
 
 	/**
 	 * Floor bounce
@@ -109,7 +120,7 @@ void main() {
 	pointOrientationStrength = clamp(pointOrientationStrength, 0.0, 1.0);
 	pointOrientationStrength = pow(pointOrientationStrength, 3.0);
 
-	// // Final
+	// Final
 	float pointFinal = pointDistanceStrength * pointOrientationStrength;
 	vec3 pointColor = mix(vec3(0.0), uPointColor, pointFinal * 5.0);
 	outgoingLight = blendAdd(outgoingLight, pointColor);
